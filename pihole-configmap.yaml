@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-config
+  namespace: pihole
+data:
+  DNSMASQ_LISTENING: local
+  PIHOLE_DNS_: '208.67.222.222;208.67.220.220;2620:119:35::35;2620:119:53::53;9.9.9.9;149.112.112.112;2620:fe::fe;2620:fe::9'
+  DNS_FQDN_REQUIRED: 'true'
+  DNS_BOGUS_PRIV: 'true'
+  DNSSEC: 'true'
+  REV_SERVER: 'true'
+  REV_SERVER_CIDR: 192.168.0.0/24
+  REV_SERVER_TARGET: '192.168.1.1'
+  REV_SERVER_DOMAIN: home.arpa
+  TZ: America/New_York
+  DNS1: '9.9.9.9'
+  DNS2: '149.112.112.112'
+  ServerIP: '192.168.1.250'

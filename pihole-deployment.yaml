@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+      - name: pihole
+        image: pihole/pihole:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+          protocol: TCP
+          name: http
+        - containerPort: 53
+          protocol: TCP
+          name: dns-tcp
+        - containerPort: 53
+          protocol: UDP
+          name: dns-udp
+        - containerPort: 67
+          protocol: UDP
+          name: client-udp
+        livenessProbe:
+          httpGet:
+            path: /admin.index.php
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /admin.index.php
+            port: 80
+          initialDelaySeconds: 25
+          periodSeconds: 5
+        envFrom:
+        - configMapRef: 
+            name: pihole-config
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        volumeMounts:
+          - name: pihole-adlist
+            mountPath: /etc/pihole/adlists.list
+            subPath: adlists.list
+      volumes:
+        - name: pihole-adlist
+          configMap:
+            name: pihole-adlist
+            items:
+              - key: adlists.list
+                path: adlists.list
+      dnsConfig:
+        nameservers:
+        - 9.9.9.9
